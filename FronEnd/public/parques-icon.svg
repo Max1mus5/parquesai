@@ -1,0 +1,24 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Tablero base -->
+  <rect x="2" y="2" width="28" height="28" rx="4" fill="#1E293B" stroke="#475569" stroke-width="1"/>
+  
+  <!-- Cruz central del Parqués -->
+  <rect x="12" y="6" width="8" height="20" fill="#334155"/>
+  <rect x="6" y="12" width="20" height="8" fill="#334155"/>
+  
+  <!-- Casillas de colores -->
+  <!-- Azul -->
+  <circle cx="8" cy="8" r="2" fill="#2563EB"/>
+  <!-- Verde -->
+  <circle cx="24" cy="8" r="2" fill="#16A34A"/>
+  <!-- Amarillo -->
+  <circle cx="24" cy="24" r="2" fill="#EAB308"/>
+  <!-- Rojo -->
+  <circle cx="8" cy="24" r="2" fill="#DC2626"/>
+  
+  <!-- Centro del tablero -->
+  <circle cx="16" cy="16" r="3" fill="#F59E0B" stroke="#FFFFFF" stroke-width="1"/>
+  
+  <!-- Detalles decorativos -->
+  <circle cx="16" cy="16" r="1" fill="#FFFFFF"/>
+</svg>

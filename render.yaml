@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: parques-distribuido-ia-backend
+    env: python
+    plan: free
+    buildCommand: cd Backend && pip install -r requirements.txt
+    startCommand: ./start.sh
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: DATABASE_URL
+        value: postgresql+asyncpg://neondb_owner:npg_BjwQ2ZtsCnR5@ep-young-salad-a8nr0kos-pooler.eastus2.azure.neon.tech/neondb?ssl=require
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ENVIRONMENT
+        value: production
+      - key: DEBUG
+        value: false
+      - key: BACKEND_CORS_ORIGINS
+        value: "*"
