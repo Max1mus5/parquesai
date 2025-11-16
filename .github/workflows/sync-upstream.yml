@@ -15,7 +15,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Fetch all history for all branches
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.PAT_TOKEN }}
       
       - name: Configure git credentials
         run: |
@@ -52,3 +52,5 @@ jobs:
         run: |
           CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
           git push origin $CURRENT_BRANCH
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
