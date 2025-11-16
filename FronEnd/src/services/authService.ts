@@ -2,7 +2,7 @@ import type { LoginRequest, RegisterRequest, AuthResponse, User } from '../types
 import { API_BASE_URL } from '../types/api';
 
 class AuthService {
-  private baseUrl = `${API_BASE_URL}/auth`;
+  private baseUrl = `${API_BASE_URL}/api/v1/auth`;
 
   async login(credentials: LoginRequest): Promise<AuthResponse> {
     const formData = new FormData();
