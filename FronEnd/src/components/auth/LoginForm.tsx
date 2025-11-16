@@ -10,7 +10,7 @@ interface LoginFormProps {
 export const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToRegister }) => {
   const { login, isLoading, error } = useAuth();
   const [formData, setFormData] = useState<LoginRequest>({
-    username: '',
+    email: '',
     password: '',
   });
   const [showPassword, setShowPassword] = useState(false);
@@ -31,8 +31,8 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToRegister }) => {
     setLocalError(null);
 
     // Validaciones básicas
-    if (!formData.username.trim()) {
-      setLocalError('El nombre de usuario es requerido');
+    if (!formData.email.trim()) {
+      setLocalError('El correo electrónico es requerido');
       return;
     }
     if (!formData.password) {
@@ -67,18 +67,18 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToRegister }) => {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="username" className="block text-sm font-medium text-text-secondary mb-2">
-            Nombre de Usuario
+          <label htmlFor="email" className="block text-sm font-medium text-text-secondary mb-2">
+            Correo Electrónico
           </label>
           <div className="relative">
             <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-text-muted" />
             <input
-              type="text"
-              id="username"
-              name="username"
-              value={formData.username}
+              type="email"
+              id="email"
+              name="email"
+              value={formData.email}
               onChange={handleChange}
-              placeholder="Ingresa tu nombre de usuario"
+              placeholder="Ingresa tu correo electrónico"
               className="w-full pl-10 pr-4 py-3 bg-bg-tertiary border border-surface rounded-lg focus:border-info focus:ring-2 focus:ring-info/20 transition-all"
               disabled={isLoading}
             />

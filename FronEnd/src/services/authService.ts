@@ -5,13 +5,12 @@ class AuthService {
   private baseUrl = `${API_BASE_URL}/api/v1/auth`;
 
   async login(credentials: LoginRequest): Promise<AuthResponse> {
-    const formData = new FormData();
-    formData.append('username', credentials.username);
-    formData.append('password', credentials.password);
-
     const response = await fetch(`${this.baseUrl}/login`, {
       method: 'POST',
-      body: formData,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(credentials),
     });
 
     if (!response.ok) {
