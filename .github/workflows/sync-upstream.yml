@@ -1,0 +1,56 @@
+name: Sync with Upstream Repository
+
+# Este workflow se ejecuta solo cuando es disparado manualmente
+on:
+  workflow_dispatch:
+
+jobs:
+  sync-upstream:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # Necesario para hacer push de cambios
+    
+    steps:
+      - name: Checkout current repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch all history for all branches
+          token: ${{ secrets.PAT_TOKEN }}
+      
+      - name: Configure git credentials
+        run: |
+          git config --global user.name "jeronimo"
+          git config --global user.email "jeronimor.dev@gmail.com"
+      
+      - name: Add upstream remote
+        run: |
+          git remote add upstream https://github.com/GeorgeKonrad29/Parques_Distribuido_IA.git || git remote set-url upstream https://github.com/GeorgeKonrad29/Parques_Distribuido_IA.git
+      
+      - name: Fetch upstream changes
+        run: |
+          git fetch upstream
+      
+      - name: Force merge upstream main branch
+        run: |
+          # Obtener el branch actual
+          CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+          echo "Current branch: $CURRENT_BRANCH"
+          
+          # Realizar merge forzado desde upstream/main
+          # La estrategia -X theirs acepta automáticamente cambios del upstream en caso de conflicto
+          git merge upstream/main -X theirs --allow-unrelated-histories -m "Sync: Force pull from upstream (GeorgeKonrad29/Parques_Distribuido_IA)" || true
+          
+          # Si hay conflictos, resolverlos aceptando los cambios de upstream
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "Resolving conflicts by accepting upstream changes..."
+            git checkout --theirs .
+            git add .
+            git commit -m "Sync: Force pull from upstream (GeorgeKonrad29/Parques_Distribuido_IA)" || true
+          fi
+      
+      - name: Push changes to origin
+        run: |
+          CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+          git push origin $CURRENT_BRANCH
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
