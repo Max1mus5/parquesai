@@ -4,6 +4,7 @@ Motor de recomendaciones inteligente para el juego Parqués
 from typing import Dict, List, Optional, Tuple, Any
 from dataclasses import dataclass
 from enum import Enum
+from datetime import datetime
 import random
 import math
 

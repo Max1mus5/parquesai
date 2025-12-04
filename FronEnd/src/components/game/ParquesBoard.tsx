@@ -5,13 +5,24 @@ import tableroImage from './tablero.jpeg';
 import styles from './GameBoard.module.css';
 import { useBoardDimensions } from '../../hooks/useBoardDimensions';
 
-export const ParquesBoard: React.FC<{ gameState: GameState; onRefresh: () => Promise<void> }> = ({ gameState, onRefresh }) => {
+interface ParquesBoardProps {
+  gameState: GameState;
+  onRefresh: () => Promise<void>;
+  diceMenuComponent?: React.ReactNode;
+  onPieceSelected?: (pieceId: string) => void;
+}
+
+export const ParquesBoard: React.FC<ParquesBoardProps> = ({ gameState, onRefresh, diceMenuComponent, onPieceSelected }) => {
   const boardRef = React.useRef<HTMLDivElement>(null!);
   const [selectedPieceId, setSelectedPieceId] = useState<string | null>(null);
   const boardDimensions = useBoardDimensions(boardRef, tableroImage);
 
   const handlePieceClick = (pieceId: string) => {
     setSelectedPieceId(pieceId === selectedPieceId ? null : pieceId);
+    // Notificar al padre que se seleccionó una ficha
+    if (onPieceSelected && pieceId !== selectedPieceId) {
+      onPieceSelected(pieceId);
+    }
   };
 
   const handlePositionClick = async (_position: number) => {
@@ -48,9 +59,15 @@ export const ParquesBoard: React.FC<{ gameState: GameState; onRefresh: () => Pro
           selectedPieceId={selectedPieceId}
           onPieceClick={handlePieceClick}
           onPositionClick={handlePositionClick}
-          diceValues={gameState?.last_dice_value ? [gameState.last_dice_value] : []}
+          diceValues={gameState?.last_dice1 !== null && gameState?.last_dice1 !== undefined &&
+                      gameState?.last_dice2 !== null && gameState?.last_dice2 !== undefined
+            ? [Number(gameState.last_dice1) + Number(gameState.last_dice2)] 
+            : []}
           activePlayerId={gameState.current_player_id}
         />
+        
+        {/* Menú de selección de dados - superpuesto en el centro */}
+        {diceMenuComponent}
       </div>
     </div>
   );

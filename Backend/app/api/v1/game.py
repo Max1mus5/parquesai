@@ -102,10 +102,10 @@ async def roll_dice(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
-    """Lanzar el dado"""
+    """Lanzar el dado DOS veces (reglas de Parqués)"""
     try:
-        dice_value = await game_service.roll_dice(db, game_id, str(current_user.id))
-        return DiceRollResponse(value=dice_value)
+        dice_result = await game_service.roll_dice(db, game_id, str(current_user.id))
+        return DiceRollResponse(**dice_result)
     except ValueError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

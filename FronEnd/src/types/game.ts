@@ -44,5 +44,16 @@ export interface GameState {
   current_player_id: string | null;
   board: { [key: number]: string[] };
   last_dice_value: number | null;
+  last_dice1: number | null;
+  last_dice2: number | null;
+  is_pair: boolean;
   winner_id: string | null;
+}
+
+export interface DiceResult {
+  dice1: number;
+  dice2: number;
+  total: number;
+  is_pair: boolean;
+  can_continue: boolean;
 }

@@ -4,7 +4,7 @@ Motor de juego Parqués - Lógica principal y validaciones
 import random
 import uuid
 from datetime import datetime
-from typing import Dict, List, Optional, Tuple, Set
+from typing import Dict, List, Optional, Tuple, Set, Any
 from dataclasses import dataclass, field
 
 from app.core.game_constants import (
@@ -66,6 +66,10 @@ class GameState:
     status: GameStatus = GameStatus.WAITING
     board: Dict[int, List[str]] = field(default_factory=dict)  # posición -> lista de piece_ids
     last_dice_value: Optional[int] = None
+    last_dice1: Optional[int] = None  # Primer dado
+    last_dice2: Optional[int] = None  # Segundo dado
+    is_pair: bool = False  # Si los dados son pares
+    jail_attempts: Dict[str, int] = field(default_factory=dict)  # player_id -> intentos
     moves_history: List[GameMove] = field(default_factory=list)
     winner_id: Optional[str] = None
     created_at: datetime = field(default_factory=datetime.utcnow)
@@ -101,19 +105,19 @@ class GameEngine:
     
     def add_player(self, game_id: str, user_id: str, name: str, 
                    color: PlayerColor, is_ai: bool = False, 
-                   ai_level: Optional[str] = None) -> bool:
-        """Agregar un jugador al juego"""
+                   ai_level: Optional[str] = None) -> Optional[str]:
+        """Agregar un jugador al juego. Retorna el player_id si tiene éxito, None si falla."""
         game = self.get_game(game_id)
         if not game or game.status != GameStatus.WAITING:
-            return False
+            return None
         
         if len(game.players) >= 4:
-            return False
+            return None
         
         # Verificar que el color no esté tomado
         for player in game.players.values():
             if player.color == color:
-                return False
+                return None
         
         player_id = str(uuid.uuid4())
         player = Player(
@@ -126,7 +130,7 @@ class GameEngine:
         )
         
         game.players[player_id] = player
-        return True
+        return player_id
     
     def remove_player(self, game_id: str, player_id: str) -> bool:
         """Remover un jugador del juego"""
@@ -166,8 +170,17 @@ class GameEngine:
         
         return True
     
-    def roll_dice(self, game_id: str, player_id: str) -> Optional[int]:
-        """Lanzar el dado"""
+    def roll_dice(self, game_id: str, player_id: str) -> Optional[Dict[str, Any]]:
+        """
+        Lanzar el dado DOS veces consecutivamente (reglas de Parqués)
+        Retorna: {
+            'dice1': int,
+            'dice2': int, 
+            'total': int,
+            'is_pair': bool,
+            'can_continue': bool  # True si sacó par (tiene otro turno)
+        }
+        """
         game = self.get_game(game_id)
         if not game or game.status != GameStatus.ACTIVE:
             return None
@@ -175,9 +188,91 @@ class GameEngine:
         if game.current_player_id != player_id:
             return None
         
-        dice_value = random.randint(1, 6)
-        game.last_dice_value = dice_value
-        return dice_value
+        # Lanzar el dado DOS veces
+        dice1 = random.randint(1, 6)
+        dice2 = random.randint(1, 6)
+        
+        is_pair = dice1 == dice2
+        total = dice1 + dice2
+        
+        # Guardar en el estado del juego
+        game.last_dice1 = dice1
+        game.last_dice2 = dice2
+        game.last_dice_value = total
+        game.is_pair = is_pair
+        
+        # Verificar si todas las fichas están en casa (cárcel)
+        player = game.players[player_id]
+        all_in_jail = all(piece.status == PieceStatus.HOME for piece in player.pieces)
+        
+        # Trackear intentos de salir de cárcel
+        if all_in_jail:
+            if player_id not in game.jail_attempts:
+                game.jail_attempts[player_id] = 0
+            
+            if not is_pair:
+                # NO incrementar aquí, se incrementará en pass_turn si no hay movimientos
+                print(f"🔒 Jugador {player_id} en cárcel. Intento {game.jail_attempts[player_id] + 1}/3")
+            else:
+                # Sacó par, puede salir
+                game.jail_attempts[player_id] = 0
+                print(f"🔓 Jugador {player_id} sacó PAR! Puede salir de cárcel")
+        else:
+            # Tiene fichas fuera, resetear contador
+            game.jail_attempts[player_id] = 0
+        
+        print(f"🎲 Jugador {player_id}: dado1={dice1}, dado2={dice2}, total={total}, par={is_pair}")
+        
+        # Si sacó par y tiene fichas en casa, sacarlas TODAS automáticamente
+        if is_pair:
+            pieces_released = self._auto_release_all_pieces(game, player_id)
+            if pieces_released > 0:
+                print(f"🚪 Se sacaron automáticamente {pieces_released} fichas de la casa")
+        
+        return {
+            'dice1': dice1,
+            'dice2': dice2,
+            'total': total,
+            'is_pair': is_pair,
+            'can_continue': is_pair  # Si es par, puede seguir jugando
+        }
+    
+    def _auto_release_all_pieces(self, game: GameState, player_id: str) -> int:
+        """Sacar automáticamente TODAS las fichas en casa cuando hay un par"""
+        player = game.players[player_id]
+        start_pos = BoardPositions.get_starting_position(player.color)
+        pieces_released = 0
+        
+        for piece in player.pieces:
+            if piece.status == PieceStatus.HOME:
+                # En Parqués, cuando sacas par, TODAS las fichas salen
+                # aunque haya otras fichas en la posición de salida (se apilan temporalmente)
+                
+                # Sacar la ficha
+                piece.position = start_pos
+                piece.status = PieceStatus.BOARD
+                
+                # Agregar al tablero
+                if start_pos not in game.board:
+                    game.board[start_pos] = []
+                game.board[start_pos].append(piece.id)
+                
+                # Crear registro del movimiento
+                game_move = GameMove(
+                    player_id=player.id,
+                    piece_id=piece.id,
+                    from_position=-1,
+                    to_position=start_pos,
+                    dice_value=0,  # Salida automática
+                    move_type=MoveType.EXIT_HOME,
+                    captured_piece_id=None
+                )
+                game.moves_history.append(game_move)
+                
+                pieces_released += 1
+                print(f"  ✅ Ficha {piece.id} salió automáticamente a posición {start_pos}")
+        
+        return pieces_released
     
     def get_valid_moves(self, game_id: str, player_id: str, dice_value: int) -> List[Dict]:
         """Obtener movimientos válidos para un jugador"""
@@ -199,8 +294,8 @@ class GameEngine:
         moves = []
         
         if piece.status == PieceStatus.HOME:
-            # Solo puede salir con 5 o 6
-            if dice_value in EXIT_HOME_VALUES:
+            # En Parqués, solo puede salir con PAR (ambos dados iguales)
+            if game.is_pair:
                 start_pos = BoardPositions.get_starting_position(piece.color)
                 if self._can_move_to_position(game, piece, start_pos):
                     moves.append({
@@ -209,6 +304,9 @@ class GameEngine:
                         'to_position': start_pos,
                         'move_type': MoveType.EXIT_HOME
                     })
+                    print(f"✅ Ficha {piece.id} puede salir de casa (par detectado)")
+            else:
+                print(f"❌ Ficha {piece.id} NO puede salir de casa (no hay par)")
         
         elif piece.status == PieceStatus.BOARD:
             # Movimiento normal en el tablero
@@ -256,7 +354,7 @@ class GameEngine:
         return moves
     
     def make_move(self, game_id: str, player_id: str, piece_id: str, 
-                  to_position: int, dice_value: int) -> Optional[GameMove]:
+                  to_position: int, dice_value: int, is_last_move: bool = False) -> Optional[GameMove]:
         """Realizar un movimiento"""
         game = self.get_game(game_id)
         if not game or game.status != GameStatus.ACTIVE:
@@ -290,10 +388,10 @@ class GameEngine:
             return None
         
         # Ejecutar el movimiento
-        return self._execute_move(game, player, piece, to_position, dice_value)
+        return self._execute_move(game, player, piece, to_position, dice_value, is_last_move)
     
     def _execute_move(self, game: GameState, player: Player, piece: Piece, 
-                     to_position: int, dice_value: int) -> GameMove:
+                     to_position: int, dice_value: int, is_last_move: bool = False) -> GameMove:
         """Ejecutar un movimiento validado"""
         from_position = piece.position
         captured_piece_id = None
@@ -358,9 +456,16 @@ class GameEngine:
             game.finished_at = datetime.utcnow()
             player.score += POINTS_FOR_WIN
         else:
-            # Cambiar turno (a menos que haya sacado 6 o capturado)
-            if dice_value != 6 and move_type != MoveType.CAPTURE:
+            # Cambiar turno SOLO si:
+            # 1. Es el último movimiento del turno (is_last_move=True)
+            # 2. Y NO sacó par
+            if is_last_move and not game.is_pair:
+                print(f"🔄 Último movimiento sin par, cambiando turno de {player.id}")
                 self._next_turn(game)
+            elif is_last_move and game.is_pair:
+                print(f"🎉 Último movimiento con par! El jugador {player.id} tiene otro turno")
+            else:
+                print(f"⏸️ Movimiento intermedio, el jugador {player.id} puede seguir moviendo")
         
         return game_move
     
@@ -465,7 +570,10 @@ class GameEngine:
         return all(piece.status == PieceStatus.GOAL for piece in player.pieces)
     
     def pass_turn(self, game_id: str, player_id: str) -> bool:
-        """Pasar turno cuando no hay movimientos válidos"""
+        """
+        Pasar turno cuando no hay movimientos válidos.
+        También maneja el caso de 3 intentos fallidos en cárcel.
+        """
         print(f"DEBUG pass_turn: game_id={game_id}, player_id={player_id}")
         
         game = self.get_game(game_id)
@@ -481,6 +589,16 @@ class GameEngine:
         if game.current_player_id != player_id:
             print("DEBUG pass_turn: Not current player's turn")
             return False
+        
+        # Verificar si llegó a 3 intentos en cárcel
+        if player_id in game.jail_attempts:
+            # Incrementar contador solo al pasar turno
+            game.jail_attempts[player_id] += 1
+            print(f"⏭️ Jugador {player_id} pasa turno. Intento {game.jail_attempts[player_id]}/3 en cárcel")
+            
+            if game.jail_attempts[player_id] >= 3:
+                print(f"🔄 Jugador {player_id} completó 3 intentos, resetear contador")
+                game.jail_attempts[player_id] = 0  # Resetear para el siguiente ciclo
 
         # Cambiar al siguiente turno
         print("DEBUG pass_turn: Changing to next turn")
@@ -526,6 +644,9 @@ class GameEngine:
             ],
             'current_player_id': game.current_player_id,
             'last_dice_value': game.last_dice_value,
+            'last_dice1': game.last_dice1,
+            'last_dice2': game.last_dice2,
+            'is_pair': game.is_pair,
             'winner_id': game.winner_id,
             'created_at': game.created_at.isoformat(),
             'started_at': game.started_at.isoformat() if game.started_at else None,

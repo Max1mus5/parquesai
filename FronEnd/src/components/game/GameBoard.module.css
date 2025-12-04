@@ -505,7 +505,7 @@
   max-width: 80rem;
   margin: 0 auto;
   border-radius: 0.5rem;
-  overflow: hidden;
+  overflow: visible;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   border: 4px solid #b45309;
   min-height: 500px;
@@ -529,4 +529,37 @@
   position: absolute;
   border: 2px dashed #3b82f6;
   pointer-events: none;
+}
+
+/* Turn warning styles */
+.turnWarning {
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border-left: 4px solid #f59e0b;
+  border-radius: 0.5rem;
+  color: #92400e;
+  font-weight: 600;
+  text-align: center;
+  font-size: 0.875rem;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+.diceButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.diceButton:disabled:hover {
+  transform: none;
+  background: var(--color-background);
 }

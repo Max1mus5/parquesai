@@ -176,7 +176,7 @@ class GameService {
     }
   }
 
-  async rollDice(gameId: string): Promise<number> {
+  async rollDice(gameId: string): Promise<import('../types/game').DiceResult> {
     try {
       const response = await fetch(`${this.baseUrl}/${gameId}/roll-dice`, {
         method: 'POST',
@@ -184,7 +184,7 @@ class GameService {
       });
 
       if (!response.ok) {
-        let errorMessage = 'Error al lanzar dado';
+        let errorMessage = 'Error al lanzar dados';
         try {
           const error = await response.json();
           errorMessage = error.detail || error.message || errorMessage;
@@ -195,7 +195,7 @@ class GameService {
       }
 
       const data = await response.json();
-      return data.value;
+      return data;
     } catch (error) {
       console.error('Error rolling dice:', error);
       if (error instanceof Error) {
@@ -230,6 +230,51 @@ class GameService {
         throw error;
       }
       throw new Error('Error desconocido al obtener movimientos válidos');
+    }
+  }
+
+  async movePiece(gameId: string, pieceId: string, diceValue: number, toPosition?: number, isLastMove: boolean = false): Promise<any> {
+    try {
+      // Si no se proporciona toPosition, obtener movimientos válidos primero
+      let targetPosition = toPosition;
+      if (targetPosition === undefined) {
+        const validMoves = await this.getValidMoves(gameId, diceValue);
+        const moveForPiece = validMoves.moves.find((m: any) => m.piece_id === pieceId);
+        if (!moveForPiece) {
+          throw new Error('No hay movimientos válidos para esta ficha');
+        }
+        targetPosition = moveForPiece.to_position;
+      }
+      
+      const response = await fetch(`${this.baseUrl}/${gameId}/move`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+        body: JSON.stringify({
+          piece_id: pieceId,
+          to_position: targetPosition,
+          dice_value: diceValue,
+          is_last_move: isLastMove
+        }),
+      });
+
+      if (!response.ok) {
+        let errorMessage = 'Error al mover ficha';
+        try {
+          const error = await response.json();
+          errorMessage = error.detail || error.message || errorMessage;
+        } catch {
+          errorMessage = `Error ${response.status}: ${response.statusText}`;
+        }
+        throw new Error(errorMessage);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error moving piece:', error);
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error('Error desconocido al mover ficha');
     }
   }
 

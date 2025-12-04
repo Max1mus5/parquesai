@@ -23,6 +23,7 @@ class GameMoveRequest(BaseModel):
     piece_id: str
     to_position: int
     dice_value: int
+    is_last_move: Optional[bool] = False  # True si es el último movimiento del turno
 
 # Esquemas de response
 class PieceResponse(BaseModel):
@@ -55,10 +56,17 @@ class GameStateResponse(BaseModel):
     current_player_id: Optional[str]
     board: Dict[int, List[str]]
     last_dice_value: Optional[int]
+    last_dice1: Optional[int]
+    last_dice2: Optional[int]
+    is_pair: bool
     winner_id: Optional[str]
 
 class DiceRollResponse(BaseModel):
-    value: int
+    dice1: int
+    dice2: int
+    total: int
+    is_pair: bool
+    can_continue: bool  # True si sacó par y puede seguir jugando
 
 class ValidMovesResponse(BaseModel):
     moves: List[Dict[str, Any]]
@@ -74,6 +82,9 @@ class GameSummaryResponse(BaseModel):
     players: List[Dict[str, Any]]
     current_player_id: Optional[str]
     last_dice_value: Optional[int]
+    last_dice1: Optional[int]
+    last_dice2: Optional[int]
+    is_pair: bool
     winner_id: Optional[str]
     created_at: str
     started_at: Optional[str]

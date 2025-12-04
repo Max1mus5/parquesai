@@ -3,7 +3,7 @@ Servicio de juego - Lógica de negocio para el juego Parqués
 """
 import uuid
 from datetime import datetime
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple, Any
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update
 from sqlalchemy.orm import selectinload
@@ -199,8 +199,8 @@ class GameService:
         db: AsyncSession, 
         game_id: str, 
         user_id: str
-    ) -> Optional[int]:
-        """Lanzar el dado"""
+    ) -> Optional[Dict[str, Any]]:
+        """Lanzar el dado DOS veces (reglas de Parqués)"""
         
         game_state = self.active_games.get(game_id)
         if not game_state:
@@ -216,11 +216,11 @@ class GameService:
         if not player_id:
             raise ValueError("No estás en este juego")
         
-        dice_value = game_engine.roll_dice(game_id, player_id)
-        if dice_value is None:
+        dice_result = game_engine.roll_dice(game_id, player_id)
+        if dice_result is None:
             raise ValueError("No es tu turno o el juego no está activo")
         
-        return dice_value
+        return dice_result
     
     async def pass_turn(
         self, 
@@ -304,7 +304,8 @@ class GameService:
             player_id, 
             request.piece_id, 
             request.to_position, 
-            request.dice_value
+            request.dice_value,
+            request.is_last_move
         )
         
         if not game_move:
@@ -392,6 +393,9 @@ class GameService:
             current_player_id=game_state.current_player_id,
             board=game_state.board,
             last_dice_value=game_state.last_dice_value,
+            last_dice1=game_state.last_dice1,
+            last_dice2=game_state.last_dice2,
+            is_pair=game_state.is_pair,
             winner_id=game_state.winner_id
         )
     

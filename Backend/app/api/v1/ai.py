@@ -57,12 +57,13 @@ async def add_bot_to_game(
                 detail="Could not add bot to game. Game may be full or not exist."
             )
         
+        # Obtener info de todos los bots en el juego
         bot_info = ai_service.get_bot_info(request.game_id)
         
         return {
             "success": True,
             "message": "Bot added successfully",
-            "bot_info": bot_info
+            "bot_info": bot_info if bot_info else {"message": "Bot added to game"}
         }
         
     except HTTPException:
@@ -130,24 +131,40 @@ async def execute_bot_turn(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
-    """Ejecutar turno completo del bot"""
+    """
+    Ejecutar turno completo del bot manualmente.
+    
+    Este endpoint permite forzar al bot a jugar su turno inmediatamente.
+    Útil cuando el background task no está funcionando o para testing.
+    
+    El bot:
+    1. Tira el dado automáticamente
+    2. Calcula el mejor movimiento
+    3. Ejecuta el movimiento
+    4. Pasa el turno al siguiente jugador
+    """
     try:
+        print(f"🎮 Forzando turno del bot en juego {game_id}...")
         success = await ai_service.execute_bot_turn(db, game_id)
         
         if not success:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Could not execute bot turn. May not be bot's turn or bot not found."
+                detail="Could not execute bot turn. May not be bot's turn or bot not found in this game."
             )
+        
+        print(f"✅ Bot jugó exitosamente en juego {game_id}")
         
         return {
             "success": True,
-            "message": "Bot turn executed successfully"
+            "message": "Bot turn executed successfully",
+            "game_id": game_id
         }
         
     except HTTPException:
         raise
     except Exception as e:
+        print(f"❌ Error executing bot turn: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error executing bot turn: {str(e)}"

@@ -42,7 +42,7 @@ class AuthService {
   }
 
   async getProfile(token: string): Promise<User> {
-    const response = await fetch(`${this.baseUrl}/profile`, {
+    const response = await fetch(`${this.baseUrl}/me`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,

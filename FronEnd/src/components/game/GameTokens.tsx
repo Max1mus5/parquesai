@@ -397,65 +397,10 @@ const GameTokens: React.FC<GameTokensProps> = ({
   };
 
   // Renderizar botón en la posición donde caería la ficha según el dado
-  const renderDiceButton = () => {
-    if (!selectedPieceId || diceValues.length === 0) return null;
-    if (!boardDimensions.imageWidth || !boardDimensions.imageHeight) return null;
-
-    // Obtener la ficha seleccionada
-    const selectedOwner = gameState.players.find(p => p.pieces.some(pc => pc.id === selectedPieceId));
-    if (!selectedOwner || selectedOwner.name !== myPlayerName) return null;
-
-    const selectedPiece = selectedOwner.pieces.find(pc => pc.id === selectedPieceId);
-    if (!selectedPiece) return null;
-
-    const currentPos = selectedPiece.position;
-    const diceValue = diceValues[0]; // Usar el primer valor del dado
-
-    // Calcular la nueva posición
-    const newPos = currentPos + diceValue;
-    const coords = getBoardPositionCoords(newPos);
-
-    const absoluteX = boardDimensions.imageX + (coords.x / 100) * boardDimensions.imageWidth;
-    const absoluteY = boardDimensions.imageY + (coords.y / 100) * boardDimensions.imageHeight;
-
-    const baseSide = Math.min(boardDimensions.imageWidth, boardDimensions.imageHeight);
-    const btnSize = Math.max(20, Math.round((baseSide * 4) / 100));
-
-    return (
-      
-      <button
-        key={`dice-btn-${newPos}`}
-        style={{
-          position: 'absolute',
-          left: `${absoluteX}px`,
-          top: `${absoluteY}px`,
-          width: `${btnSize}px`,
-          height: `${btnSize}px`,
-          transform: 'translate(-50%, -50%)',
-          borderRadius: '8px',
-          background: '#111827',
-          color: '#fff',
-          border: '1px solid #374151',
-          cursor: 'pointer',
-          zIndex: 5,
-          fontSize: '10px',
-        }}
-        onClick={(e) => {
-          e.stopPropagation();
-          console.log('Botón presionado - Nueva posición:', newPos);
-          onPositionClick(newPos);
-        }}
-        title={`Mover a posición ${newPos}`}
-      >
-        {diceValue}
-      </button>
-    );
-  };
-
   return (
     <div className={styles['tokens-overlay']}>
       {renderBoardPositions()}
-      {renderDiceButton()}
+      {/* Botón de dado eliminado - ahora se usa el menú central */}
       {piecesWithCoords.map(({ piece, player, x, y, positionKey }) =>
         renderPiece(piece, player, x, y, positionCounts[positionKey] || 1)
       )}

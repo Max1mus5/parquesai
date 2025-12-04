@@ -21,10 +21,15 @@ export const GameDetails: React.FC<{ gameState: GameState }> = ({ gameState }) =
           </span>
         </div>
         <div className={styles.detailItem}>
-          <span className={styles.detailLabel}>Último dado lanzado:</span>
+          <span className={styles.detailLabel}>Últimos dados lanzados:</span>
           <div className={styles.diceValue}>
             <Dice5 className="w-4 h-4 text-text-secondary" />
-            <span>{gameState.last_dice_value ?? '—'}</span>
+            <span>
+              {gameState.last_dice1 !== null && gameState.last_dice1 !== undefined && 
+               gameState.last_dice2 !== null && gameState.last_dice2 !== undefined
+                ? `${Number(gameState.last_dice1)} + ${Number(gameState.last_dice2)} = ${Number(gameState.last_dice1) + Number(gameState.last_dice2)}${gameState.is_pair ? ' (PAR ✓)' : ''}`
+                : '—'}
+            </span>
           </div>
         </div>
       </div>

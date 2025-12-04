@@ -23,15 +23,23 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         const savedUser = authService.getUser();
 
         if (savedToken && savedUser) {
-          // Verificar que el token sigue siendo válido
+          // Establecer token y usuario inmediatamente
+          setToken(savedToken);
+          setUser(savedUser);
+          
+          // Verificar que el token sigue siendo válido en segundo plano
           try {
             const profile = await authService.getProfile(savedToken);
-            setToken(savedToken);
+            // Actualizar con datos frescos del servidor
             setUser(profile);
+            authService.saveUser(profile);
           } catch (error) {
             // Token inválido, limpiar datos
+            console.error('Token inválido o expirado:', error);
             authService.removeToken();
             authService.removeUser();
+            setToken(null);
+            setUser(null);
           }
         }
       } catch (error) {
