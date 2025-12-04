@@ -152,12 +152,8 @@ class GameService:
         # Obtener estado del juego
         game_state = self.active_games.get(game_id)
         if not game_state:
-            # Intentar restaurar desde la base de datos
-            game_state = await self._restore_game_from_db(db, game_id)
-            if not game_state:
-                # Si no existe, crear uno nuevo
-                game_state = game_engine.create_game(game_id)
-                self.active_games[game_id] = game_state
+            game_state = game_engine.create_game(game_id)
+            self.active_games[game_id] = game_state
         
         # Agregar jugador al motor de juego
         success = game_engine.add_player(
