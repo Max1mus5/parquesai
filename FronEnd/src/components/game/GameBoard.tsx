@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, RefreshCw, Users, Crown, Plus, Play } from 'lucide-react';
 import { gameService} from '../../services/gameService';
-// removed unused imports
+import { iaService } from '../../services/IAService';
 import { type GameState, type DiceResult } from '../../types/game';
 import { PlayersSidebar } from './PlayersSidebar';
 import { GameDetails } from './GameDetails';
@@ -132,7 +132,7 @@ export const GameBoard: React.FC = () => {
                 .then((state) => setGameState(state))
                 .catch((err) => console.error('Error updating game state after bot turn:', err));
             })
-            .catch((err) => {
+            .catch((err: Error) => {
               // Si hay error (ej: bot ya jugó), continúa sin hacer nada
               console.log('Bot turn already processed or error:', err.message);
             });
