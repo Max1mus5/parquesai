@@ -1,5 +1,27 @@
 """
 Servicio de juego - Lógica de negocio para el juego Parqués
+
+ALGORITMO DE SINCRONIZACIÓN:
+========================
+Este servicio implementa "Centralized Timestamp-based Synchronization"
+similar al algoritmo de Cristian (1989), donde:
+
+1. PostgreSQL actúa como AUTORIDAD TEMPORAL central (Time Authority)
+2. Todos los eventos usan timestamps UTC del servidor
+3. La base de datos es la ÚNICA FUENTE DE VERDAD (Single Source of Truth)
+4. Estado en memoria es volátil, se recarga desde BD si es necesario
+
+Características:
+- Timestamp Ordering: Orden total basado en timestamps de BD
+- Crash Recovery: Recarga automática desde PostgreSQL
+- Eventual Consistency: Polling periódico para sincronización
+- Primary-Backup: PostgreSQL como primario, memoria como caché
+
+Comparación con otros algoritmos:
+- Berkeley Algorithm: Requiere múltiples nodos activos (no viable en PaaS)
+- Lamport Clocks: Relojes lógicos (nosotros usamos timestamps físicos)
+- Vector Clocks: Para causalidad distribuida (no necesario en arquitectura centralizada)
+- Cristian's Algorithm: ✓ El más similar - servidor central de tiempo
 """
 import uuid
 from datetime import datetime

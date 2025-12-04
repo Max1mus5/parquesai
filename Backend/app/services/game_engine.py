@@ -309,22 +309,30 @@ class GameEngine:
                 print(f"❌ Ficha {piece.id} NO puede salir de casa (no hay par)")
         
         elif piece.status == PieceStatus.BOARD:
-            # Movimiento normal en el tablero
-            new_position = BoardPositions.calculate_next_position(piece.position, dice_value)
-            
             # Verificar si debe entrar a la zona de meta
             goal_entry = BoardPositions.get_goal_entry_position(piece.color)
-            if self._should_enter_goal_zone(piece, new_position, goal_entry):
-                goal_position = self._calculate_goal_position(piece, dice_value, goal_entry)
-                if goal_position is not None and self._can_move_to_goal(game, piece, goal_position):
-                    moves.append({
-                        'piece_id': piece.id,
-                        'from_position': piece.position,
-                        'to_position': goal_position,
-                        'move_type': MoveType.ENTER_GOAL
-                    })
+            
+            # Calcular si el movimiento cruza o llega a la entrada de meta
+            if self._will_pass_goal_entry(piece.position, dice_value, goal_entry):
+                # Calcular cuántos pasos después de la entrada
+                steps_to_entry = self._calculate_steps_to_position(piece.position, goal_entry)
+                steps_into_goal = dice_value - steps_to_entry
+                
+                if steps_into_goal > 0 and steps_into_goal <= GOAL_POSITIONS:
+                    # Entra a la zona de meta
+                    goal_position = BOARD_SIZE + steps_into_goal - 1  # 68, 69, 70...
+                    if self._can_move_to_goal(game, piece, goal_position):
+                        moves.append({
+                            'piece_id': piece.id,
+                            'from_position': piece.position,
+                            'to_position': goal_position,
+                            'move_type': MoveType.ENTER_GOAL
+                        })
+                        print(f"✅ Ficha {piece.id} puede entrar a meta: pos {piece.position} + {dice_value} = meta {goal_position}")
             else:
-                # Movimiento normal
+                # Movimiento normal en el tablero circular
+                new_position = BoardPositions.calculate_next_position(piece.position, dice_value)
+                
                 if self._can_move_to_position(game, piece, new_position):
                     move_type = MoveType.NORMAL_MOVE
                     if self._would_capture(game, piece, new_position):
@@ -338,18 +346,65 @@ class GameEngine:
                     })
         
         elif piece.status == PieceStatus.SAFE_ZONE:
-            # Movimiento en zona de meta
-            new_position = piece.position + dice_value
-            goal_positions = BoardPositions.get_goal_positions(piece.color)
+            # SAFE_ZONE puede ser:
+            # 1. Zona de meta (posiciones >= 68)
+            # 2. Casilla segura en el tablero (5, 12, 17, 22, etc.)
             
-            if new_position <= max(goal_positions):
-                if self._can_move_to_goal(game, piece, new_position):
-                    moves.append({
-                        'piece_id': piece.id,
-                        'from_position': piece.position,
-                        'to_position': new_position,
-                        'move_type': MoveType.ENTER_GOAL
-                    })
+            if piece.position >= BOARD_SIZE:
+                # Está en zona de meta (68-75)
+                new_position = piece.position + dice_value
+                max_goal_position = BOARD_SIZE + GOAL_POSITIONS - 1  # 75
+                
+                # Verificar que no se pase de la meta final
+                if new_position <= max_goal_position:
+                    if self._can_move_to_goal(game, piece, new_position):
+                        move_type = MoveType.ENTER_GOAL
+                        
+                        moves.append({
+                            'piece_id': piece.id,
+                            'from_position': piece.position,
+                            'to_position': new_position,
+                            'move_type': move_type
+                        })
+                        print(f"✅ Ficha {piece.id} puede avanzar en meta: {piece.position} → {new_position}")
+                else:
+                    print(f"❌ Ficha {piece.id} se pasaría de meta: {piece.position} + {dice_value} = {new_position} > {max_goal_position}")
+            else:
+                # Está en una casilla segura del tablero (0-67)
+                # Tratarla como si estuviera en BOARD
+                goal_entry = BoardPositions.get_goal_entry_position(piece.color)
+                
+                if self._will_pass_goal_entry(piece.position, dice_value, goal_entry):
+                    # Calculará entrada a meta
+                    steps_to_entry = self._calculate_steps_to_position(piece.position, goal_entry)
+                    steps_into_goal = dice_value - steps_to_entry
+                    
+                    if steps_into_goal > 0 and steps_into_goal <= GOAL_POSITIONS:
+                        goal_position = BOARD_SIZE + steps_into_goal - 1
+                        if self._can_move_to_goal(game, piece, goal_position):
+                            moves.append({
+                                'piece_id': piece.id,
+                                'from_position': piece.position,
+                                'to_position': goal_position,
+                                'move_type': MoveType.ENTER_GOAL
+                            })
+                            print(f"✅ Ficha {piece.id} puede entrar a meta desde casilla segura")
+                else:
+                    # Movimiento normal en el tablero
+                    new_position = BoardPositions.calculate_next_position(piece.position, dice_value)
+                    
+                    if self._can_move_to_position(game, piece, new_position):
+                        move_type = MoveType.NORMAL_MOVE
+                        if self._would_capture(game, piece, new_position):
+                            move_type = MoveType.CAPTURE
+                        
+                        moves.append({
+                            'piece_id': piece.id,
+                            'from_position': piece.position,
+                            'to_position': new_position,
+                            'move_type': move_type
+                        })
+                        print(f"✅ Ficha {piece.id} puede moverse desde casilla segura: {piece.position} → {new_position}")
         
         return moves
     
@@ -408,20 +463,27 @@ class GameEngine:
             move_type = MoveType.NORMAL_MOVE
         
         # Remover ficha de posición anterior
-        if piece.status == PieceStatus.BOARD and from_position in game.board:
+        if from_position in game.board:
             if piece.id in game.board[from_position]:
                 game.board[from_position].remove(piece.id)
+                print(f"🔄 Ficha {piece.id} removida de posición {from_position}")
         
         # Actualizar ficha
         piece.position = to_position
         
+        # Determinar nuevo estado de la ficha
         if to_position < 0:
             piece.status = PieceStatus.HOME
+        elif to_position >= BOARD_SIZE + GOAL_POSITIONS - 1:
+            # Llegó a la última posición de meta (coronó)
+            piece.status = PieceStatus.GOAL
+            print(f"🏆 Ficha {piece.id} CORONÓ en posición {to_position}!")
         elif to_position >= BOARD_SIZE:
+            # Está en zona de meta pero no ha coronado
             piece.status = PieceStatus.SAFE_ZONE
-        elif BoardPositions.is_safe_position(to_position):
-            piece.status = PieceStatus.SAFE_ZONE
+            print(f"🎯 Ficha {piece.id} en zona de meta: posición {to_position}")
         else:
+            # Está en el tablero circular (0-67)
             piece.status = PieceStatus.BOARD
         
         # Colocar ficha en nueva posición
@@ -486,21 +548,25 @@ class GameEngine:
     
     def _can_move_to_goal(self, game: GameState, piece: Piece, position: int) -> bool:
         """Verificar si una ficha puede moverse a la zona de meta"""
-        goal_positions = BoardPositions.get_goal_positions(piece.color)
-        if position not in goal_positions:
+        # Verificar que la posición esté en el rango de meta (68-75)
+        if position < BOARD_SIZE or position >= BOARD_SIZE + GOAL_POSITIONS:
             return False
         
-        # Verificar que no haya otra ficha del mismo jugador
+        # Encontrar al jugador dueño de la ficha
         player = None
         for p in game.players.values():
             if any(piece.id == p_piece.id for p_piece in p.pieces):
                 player = p
                 break
         
-        if player:
-            for p in player.pieces:
-                if p.position == position and p.id != piece.id:
-                    return False
+        if not player:
+            return False
+        
+        # Verificar que no haya otra ficha del mismo jugador en esa posición
+        for p in player.pieces:
+            if p.position == position and p.id != piece.id:
+                print(f"❌ Posición {position} ocupada por ficha {p.id} del mismo jugador")
+                return False
         
         return True
     
@@ -546,24 +612,25 @@ class GameEngine:
     
     def _should_enter_goal_zone(self, piece: Piece, new_position: int, goal_entry: int) -> bool:
         """Verificar si una ficha debe entrar a la zona de meta"""
-        # Lógica para determinar si la ficha ha pasado por su entrada de meta
-        # y debe dirigirse hacia el centro
-        return new_position == goal_entry or (
-            piece.position < goal_entry < new_position or
-            (piece.position > goal_entry and new_position < piece.position)
-        )
+        # Esta función ya no se usa, reemplazada por _will_pass_goal_entry
+        return False
     
-    def _calculate_goal_position(self, piece: Piece, dice_value: int, goal_entry: int) -> Optional[int]:
-        """Calcular posición en la zona de meta"""
-        steps_past_entry = dice_value - (goal_entry - piece.position)
-        if steps_past_entry <= 0:
-            return None
-        
-        goal_positions = BoardPositions.get_goal_positions(piece.color)
-        if steps_past_entry <= len(goal_positions):
-            return goal_positions[steps_past_entry - 1]
-        
-        return None
+    def _will_pass_goal_entry(self, current_pos: int, steps: int, goal_entry: int) -> bool:
+        """Verificar si el movimiento pasará por la entrada de meta del color"""
+        # Calcular todas las posiciones que recorrerá
+        for i in range(1, steps + 1):
+            pos = (current_pos + i) % BOARD_SIZE
+            if pos == goal_entry:
+                return True
+        return False
+    
+    def _calculate_steps_to_position(self, from_pos: int, to_pos: int) -> int:
+        """Calcular cuántos pasos hay de from_pos a to_pos en el tablero circular"""
+        if to_pos >= from_pos:
+            return to_pos - from_pos
+        else:
+            # Dar la vuelta al tablero
+            return (BOARD_SIZE - from_pos) + to_pos
     
     def _check_victory(self, player: Player) -> bool:
         """Verificar si un jugador ha ganado"""

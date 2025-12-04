@@ -43,8 +43,8 @@ GOAL_POSITIONS = 8  # Casillas en la zona de meta
 # Posiciones iniciales por color
 STARTING_POSITIONS: Dict[PlayerColor, int] = {
     PlayerColor.RED: 5,
-    PlayerColor.BLUE: 22,
-    PlayerColor.YELLOW: 39,
+    PlayerColor.BLUE: 39,
+    PlayerColor.YELLOW: 22,
     PlayerColor.GREEN: 56
 }
 

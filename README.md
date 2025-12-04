@@ -208,10 +208,59 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000
 - **ML Models**: Modelos de aprendizaje automático
 
 #### 5. **Sincronización Distribuida** (`app/distributed/`)
-- **Berkeley Algorithm**: Implementación del algoritmo Berkeley
-- **Sync Service**: Servicio de sincronización distribuida
-- **Node Management**: Gestión de nodos maestro/esclavo
-- **Time Coordination**: Coordinación temporal entre nodos
+
+**⚠️ NOTA IMPORTANTE: Sincronización en Producción**
+
+El proyecto incluye dos estrategias de sincronización:
+
+##### **A) Algoritmo de Berkeley (Implementado pero no usado en producción)**
+- **Ubicación**: `app/distributed/berkeley_algorithm.py`
+- **Propósito**: Sincronización de tiempo entre múltiples nodos distribuidos
+- **Estado**: ✅ Implementado completamente
+- **Uso**: ❌ No activo en producción (Render + Vercel)
+
+**¿Por qué no se usa Berkeley en producción?**
+```
+Limitaciones de PaaS/Serverless:
+✗ Requiere múltiples nodos activos simultáneamente
+✗ Comunicación peer-to-peer entre contenedores no disponible
+✗ Instancias efímeras que se reinician/duermen
+✗ No hay control sobre reloj del sistema en contenedores
+✗ Render Free tier: auto-sleep después de 15min inactividad
+```
+
+##### **B) Sincronización Centralizada (USADO EN PRODUCCIÓN)** ⭐
+- **Algoritmo**: Centralized Timestamp-based Synchronization (similar a Cristian's Algorithm)
+- **Implementación**: `app/services/game_service.py`
+- **Autoridad Temporal**: PostgreSQL en Neon
+- **Características**:
+  - ✅ PostgreSQL como **Single Source of Truth**
+  - ✅ Timestamps UTC del servidor como orden total
+  - ✅ Crash Recovery automático desde BD
+  - ✅ Eventual Consistency vía polling
+  - ✅ Primary-Backup con BD como primario
+
+**Comparación con algoritmos clásicos:**
+```python
+# Cristian's Algorithm (1989) - MÁS SIMILAR ✓
+Cliente ← Servidor (timestamp)
+Cliente ajusta su reloj
+
+# Nuestro caso:
+Backend ← PostgreSQL (timestamps)
+Backend usa timestamps de BD directamente
+
+# Berkeley Algorithm - Implementado pero no usado
+Maestro solicita tiempo a todos los esclavos
+Maestro calcula promedio y envía ajustes
+Todos ajustan sus relojes
+```
+
+**Componentes del sistema distribuido:**
+- **Node Management**: Gestión de nodos maestro/esclavo (Berkeley)
+- **Time Coordination**: Coordinación temporal (timestamps centralizados)
+- **Sync Service**: Servicio de sincronización (híbrido)
+- **Database Authority**: PostgreSQL como autoridad temporal (producción)
 
 ### 📡 Comunicación en Tiempo Real
 
