@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, RefreshCw, Users, Crown, Plus } from 'lucide-react';
+import { ArrowLeft, RefreshCw, Users, Crown } from 'lucide-react';
 import { gameService} from '../../services/gameService';
-import { iaService } from '../../services/IAService';
 // removed unused imports
 import { type GameState } from '../../types/game';
 import { PlayersSidebar } from './PlayersSidebar';

@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { authService } from '../../services/authService';
 import type { GameState } from '../../types/game';
 import GameTokens from './GameTokens';
 import tableroImage from './tablero.jpeg';
@@ -9,14 +8,13 @@ import { useBoardDimensions } from '../../hooks/useBoardDimensions';
 export const ParquesBoard: React.FC<{ gameState: GameState; onRefresh: () => Promise<void> }> = ({ gameState, onRefresh }) => {
   const boardRef = React.useRef<HTMLDivElement>(null!);
   const [selectedPieceId, setSelectedPieceId] = useState<string | null>(null);
-  const myPlayerId = authService.getUser() ? String(authService.getUser()!.id) : null;
   const boardDimensions = useBoardDimensions(boardRef, tableroImage);
 
   const handlePieceClick = (pieceId: string) => {
     setSelectedPieceId(pieceId === selectedPieceId ? null : pieceId);
   };
 
-  const handlePositionClick = async (position: number) => {
+  const handlePositionClick = async (_position: number) => {
     if (!selectedPieceId) return;
     // Movement handled by API in GameBoard flow; just clear selection and refresh
     setSelectedPieceId(null);
