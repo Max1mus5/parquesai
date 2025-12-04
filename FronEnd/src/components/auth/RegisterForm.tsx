@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { UserPlus, Eye, EyeOff, User, Mail, Lock } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import type { RegisterRequest } from '../../types/auth';
+import styles from './RegisterForm.module.css';
 
 interface RegisterFormProps {
   onSwitchToLogin: () => void;
@@ -83,28 +84,26 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) =
   const displayError = localError || error;
 
   return (
-    <div className="card w-full max-w-md mx-auto fade-in">
-      <div className="text-center mb-6">
-        <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-parques-green to-success rounded-full flex items-center justify-center">
-          <UserPlus className="w-8 h-8 text-white" />
+    <div className={styles.card}>
+      <div className={styles.headerBlock}>
+        <div className={styles.headerIconWrap}>
+          <UserPlus className={styles.headerIcon} />
         </div>
-        <h2 className="text-2xl font-bold text-text-primary mb-2">Crear Cuenta</h2>
-        <p className="text-text-secondary">Únete a la comunidad del Parqués</p>
+        <h2 className={styles.headerTitle}>Crear Cuenta</h2>
+        <p className={styles.headerSubtitle}>Únete a la comunidad del Parqués</p>
       </div>
 
       {displayError && (
-        <div className="bg-error/10 border border-error/20 rounded-lg p-3 mb-4">
-          <p className="text-error text-sm">{displayError}</p>
+        <div className={styles.errorBox}>
+          <p className={styles.errorText}>{displayError}</p>
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className={styles.form}>
         <div>
-          <label htmlFor="username" className="block text-sm font-medium text-text-secondary mb-2">
-            Nombre de Usuario
-          </label>
-          <div className="relative">
-            <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-text-muted" />
+          <label htmlFor="username" className={styles.label}>Nombre de Usuario</label>
+          <div className={styles.inputWrap}>
+            <User className={styles.inputIconLeft} />
             <input
               type="text"
               id="username"
@@ -112,18 +111,16 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) =
               value={formData.username}
               onChange={handleChange}
               placeholder="Elige un nombre de usuario"
-              className="w-full pl-10 pr-4 py-3 bg-bg-tertiary border border-surface rounded-lg focus:border-info focus:ring-2 focus:ring-info/20 transition-all"
+              className={styles.input}
               disabled={isLoading}
             />
           </div>
         </div>
 
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-text-secondary mb-2">
-            Correo Electrónico
-          </label>
-          <div className="relative">
-            <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-text-muted" />
+          <label htmlFor="email" className={styles.label}>Correo Electrónico</label>
+          <div className={styles.inputWrap}>
+            <Mail className={styles.inputIconLeft} />
             <input
               type="email"
               id="email"
@@ -131,18 +128,16 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) =
               value={formData.email}
               onChange={handleChange}
               placeholder="tu@email.com"
-              className="w-full pl-10 pr-4 py-3 bg-bg-tertiary border border-surface rounded-lg focus:border-info focus:ring-2 focus:ring-info/20 transition-all"
+              className={styles.input}
               disabled={isLoading}
             />
           </div>
         </div>
 
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-text-secondary mb-2">
-            Contraseña
-          </label>
-          <div className="relative">
-            <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-text-muted" />
+          <label htmlFor="password" className={styles.label}>Contraseña</label>
+          <div className={styles.inputWrap}>
+            <Lock className={styles.inputIconLeft} />
             <input
               type={showPassword ? 'text' : 'password'}
               id="password"
@@ -150,26 +145,24 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) =
               value={formData.password}
               onChange={handleChange}
               placeholder="Crea una contraseña segura"
-              className="w-full pl-10 pr-12 py-3 bg-bg-tertiary border border-surface rounded-lg focus:border-info focus:ring-2 focus:ring-info/20 transition-all"
+              className={styles.inputWithToggle}
               disabled={isLoading}
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-text-muted hover:text-text-secondary transition-colors"
+              className={styles.inputToggle}
               disabled={isLoading}
             >
-              {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              {showPassword ? <EyeOff className={styles.toggleIcon} /> : <Eye className={styles.toggleIcon} />}
             </button>
           </div>
         </div>
 
         <div>
-          <label htmlFor="confirmPassword" className="block text-sm font-medium text-text-secondary mb-2">
-            Confirmar Contraseña
-          </label>
-          <div className="relative">
-            <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-text-muted" />
+          <label htmlFor="confirmPassword" className={styles.label}>Confirmar Contraseña</label>
+          <div className={styles.inputWrap}>
+            <Lock className={styles.inputIconLeft} />
             <input
               type={showConfirmPassword ? 'text' : 'password'}
               id="confirmPassword"
@@ -177,47 +170,39 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) =
               value={confirmPassword}
               onChange={handleChange}
               placeholder="Confirma tu contraseña"
-              className="w-full pl-10 pr-12 py-3 bg-bg-tertiary border border-surface rounded-lg focus:border-info focus:ring-2 focus:ring-info/20 transition-all"
+              className={styles.inputWithToggle}
               disabled={isLoading}
             />
             <button
               type="button"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-text-muted hover:text-text-secondary transition-colors"
+              className={styles.inputToggle}
               disabled={isLoading}
             >
-              {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              {showConfirmPassword ? <EyeOff className={styles.toggleIcon} /> : <Eye className={styles.toggleIcon} />}
             </button>
           </div>
         </div>
 
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="btn-success w-full py-3 text-base font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
-        >
+        <button type="submit" disabled={isLoading} className={styles.submitBtnSuccess}>
           {isLoading ? (
-            <div className="flex items-center justify-center">
-              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2"></div>
+            <div className={styles.spinnerRow}>
+              <div className={styles.spinner}></div>
               Creando cuenta...
             </div>
           ) : (
             <>
-              <UserPlus className="w-5 h-5" />
+              <UserPlus className={styles.submitIcon} />
               Crear Cuenta
             </>
           )}
         </button>
       </form>
 
-      <div className="mt-6 text-center">
-        <p className="text-text-muted">
+      <div className={styles.footer}>
+        <p className={styles.footerText}>
           ¿Ya tienes una cuenta?{' '}
-          <button
-            onClick={onSwitchToLogin}
-            className="text-info hover:text-accent-gold font-medium transition-colors"
-            disabled={isLoading}
-          >
+          <button onClick={onSwitchToLogin} className={styles.footerLink} disabled={isLoading}>
             Inicia sesión aquí
           </button>
         </p>

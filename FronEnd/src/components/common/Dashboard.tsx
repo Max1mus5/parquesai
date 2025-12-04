@@ -1,156 +1,143 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { LogOut, User, Gamepad2, Trophy, Settings } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
-
+import { SettingsModal } from './SettingsModal';
+import styles from './Dashboard.module.css';
 export const Dashboard: React.FC = () => {
+  const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [currentUser, setCurrentUser] = useState(user);
 
   const handleLogout = () => {
     logout();
+    navigate('/');
+  };
+
+  const handlePlayNow = () => {
+    navigate('/games');
+  };
+
+  const handleProfileUpdated = (updatedUser: any) => {
+    setCurrentUser(updatedUser);
   };
 
   return (
-    <div className="min-h-screen bg-bg-primary">
-      {/* Header */}
-      <header className="bg-bg-secondary border-b border-surface">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-gradient-to-br from-parques-blue to-info rounded-lg flex items-center justify-center">
-                <Gamepad2 className="w-5 h-5 text-white" />
-              </div>
-              <h1 className="text-xl font-bold text-text-primary">Parqués Distribuido IA</h1>
+    <div className={styles.container}>
+      <header className={styles.header}>
+        <div className={styles.headerInner}>
+          <div className={styles.brandRow}>
+            <div className={styles.brandIcon}>
+              <Gamepad2 className={styles.brandIconSvg} />
             </div>
-            
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2 text-text-secondary">
-                <User className="w-5 h-5" />
-                <span>Hola, {user?.username}</span>
-              </div>
-              <button
-                onClick={handleLogout}
-                className="btn-secondary flex items-center space-x-2 px-4 py-2"
-              >
-                <LogOut className="w-4 h-4" />
-                <span>Cerrar Sesión</span>
-              </button>
+            <h1 className={styles.title}>Parqués Distribuido IA</h1>
+          </div>
+
+          <div className={styles.userRow}>
+            <div className={styles.userInfo}>
+              <User className={styles.userIcon} />
+              <span>Hola, {user?.username}</span>
             </div>
+            <button onClick={handleLogout} className={styles.logoutBtn}>
+              <LogOut className={styles.logoutIcon} />
+              <span>Cerrar Sesión</span>
+            </button>
           </div>
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold text-text-primary mb-2">
-            ¡Bienvenido de vuelta, {user?.username}!
-          </h2>
-          <p className="text-text-secondary">
-            Listo para jugar una partida de Parqués?
-          </p>
+      <main className={styles.main}>
+        <div className={styles.welcomeBlock}>
+          <h2 className={styles.sectionTitle}>¡Bienvenido de vuelta, {user?.username}!</h2>
+          <p className={styles.sectionSubtitle}>Listo para jugar una partida de Parqués?</p>
         </div>
 
-        {/* Cards de opciones */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* Nueva Partida */}
-          <div className="card hover:shadow-lg transition-shadow cursor-pointer">
-            <div className="flex items-center space-x-4 mb-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-parques-green to-success rounded-lg flex items-center justify-center">
-                <Gamepad2 className="w-6 h-6 text-white" />
+        <div className={styles.cardGrid}>
+          <div className={styles.card}>
+            <div className={styles.cardHeader}>
+              <div className={`${styles.cardIcon} ${styles.cardIconGreen}`}>
+                <Gamepad2 className={styles.cardIconSvg} />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-text-primary">Nueva Partida</h3>
-                <p className="text-text-muted text-sm">Crear o unirse a una partida</p>
+                <h3 className={styles.cardTitle}>Nueva Partida</h3>
+                <p className={styles.cardSubtitle}>Crear o unirse a una partida</p>
               </div>
             </div>
-            <button className="btn-success w-full">
-              Jugar Ahora
-            </button>
+            <button onClick={handlePlayNow} className={styles.playButton}>Jugar Ahora</button>
           </div>
 
-          {/* Estadísticas */}
-          <div className="card hover:shadow-lg transition-shadow cursor-pointer">
-            <div className="flex items-center space-x-4 mb-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-parques-yellow to-warning rounded-lg flex items-center justify-center">
-                <Trophy className="w-6 h-6 text-bg-primary" />
+          <div className={styles.card}>
+            <div className={styles.cardHeader}>
+              <div className={`${styles.cardIcon} ${styles.cardIconYellow}`}>
+                <Trophy className={styles.cardIconSvgAlt} />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-text-primary">Estadísticas</h3>
-                <p className="text-text-muted text-sm">Ver tu progreso y logros</p>
+                <h3 className={styles.cardTitle}>Estadísticas</h3>
+                <p className={styles.cardSubtitle}>Ver tu progreso y logros</p>
               </div>
             </div>
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm">
-                <span className="text-text-secondary">Partidas jugadas:</span>
-                <span className="text-text-primary font-medium">0</span>
+            <div className={styles.statsBlock}>
+              <div className={styles.statsRow}>
+                <span className={styles.statsLabel}>Partidas jugadas:</span>
+                <span className={styles.statsValue}>0</span>
               </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-text-secondary">Victorias:</span>
-                <span className="text-success font-medium">0</span>
+              <div className={styles.statsRow}>
+                <span className={styles.statsLabel}>Victorias:</span>
+                <span className={styles.statsValueSuccess}>0</span>
               </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-text-secondary">Nivel:</span>
-                <span className="text-accent-gold font-medium">Principiante</span>
+              <div className={styles.statsRow}>
+                <span className={styles.statsLabel}>Nivel:</span>
+                <span className={styles.statsValueAccent}>Principiante</span>
               </div>
             </div>
           </div>
 
-          {/* Configuración */}
-          <div className="card hover:shadow-lg transition-shadow cursor-pointer">
-            <div className="flex items-center space-x-4 mb-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-parques-red to-error rounded-lg flex items-center justify-center">
-                <Settings className="w-6 h-6 text-white" />
+          <div className={styles.card}>
+            <div className={styles.cardHeader}>
+              <div className={`${styles.cardIcon} ${styles.cardIconRed}`}>
+                <Settings className={styles.cardIconSvg} />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-text-primary">Configuración</h3>
-                <p className="text-text-muted text-sm">Personalizar tu experiencia</p>
+                <h3 className={styles.cardTitle}>Configuración</h3>
+                <p className={styles.cardSubtitle}>Personalizar tu experiencia</p>
               </div>
             </div>
-            <button className="btn-secondary w-full">
-              Configurar
-            </button>
+            <button onClick={() => setShowSettingsModal(true)} className={styles.settingsButton}>Configurar</button>
           </div>
         </div>
 
-        {/* Información del usuario */}
-        <div className="mt-8 card">
-          <h3 className="text-xl font-semibold text-text-primary mb-4">Información de la Cuenta</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className={styles.accountCard}>
+          <h3 className={styles.accountTitle}>Información de la Cuenta</h3>
+          <div className={styles.accountGrid}>
             <div>
-              <label className="block text-sm font-medium text-text-secondary mb-1">
-                Nombre de Usuario
-              </label>
-              <p className="text-text-primary">{user?.username}</p>
+              <label className={styles.label}>Nombre de Usuario</label>
+              <p className={styles.value}>{user?.username}</p>
             </div>
             <div>
-              <label className="block text-sm font-medium text-text-secondary mb-1">
-                Correo Electrónico
-              </label>
-              <p className="text-text-primary">{user?.email}</p>
+              <label className={styles.label}>Correo Electrónico</label>
+              <p className={styles.value}>{user?.email}</p>
             </div>
             <div>
-              <label className="block text-sm font-medium text-text-secondary mb-1">
-                Fecha de Registro
-              </label>
-              <p className="text-text-primary">
-                {user?.created_at ? new Date(user.created_at).toLocaleDateString('es-ES') : 'N/A'}
-              </p>
+              <label className={styles.label}>Fecha de Registro</label>
+              <p className={styles.value}>{user?.created_at ? new Date(user.created_at).toLocaleDateString('es-ES') : 'N/A'}</p>
             </div>
             <div>
-              <label className="block text-sm font-medium text-text-secondary mb-1">
-                Estado
-              </label>
-              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                user?.is_active 
-                  ? 'bg-success/10 text-success' 
-                  : 'bg-error/10 text-error'
-              }`}>
+              <label className={styles.label}>Estado</label>
+              <span className={user?.is_active ? styles.badgeActive : styles.badgeInactive}>
                 {user?.is_active ? 'Activo' : 'Inactivo'}
               </span>
             </div>
           </div>
         </div>
       </main>
+
+      <SettingsModal
+        isOpen={showSettingsModal}
+        onClose={() => setShowSettingsModal(false)}
+        user={currentUser}
+        onProfileUpdated={handleProfileUpdated}
+      />
     </div>
   );
 };

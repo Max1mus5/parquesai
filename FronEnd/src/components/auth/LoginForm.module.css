@@ -1,0 +1,36 @@
+.card { width: 100%; max-width: 420px; margin: 0 auto; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; padding: 20px; animation: fadeIn 240ms ease-in; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px);} to { opacity: 1; transform: translateY(0);} }
+
+.headerBlock { text-align: center; margin-bottom: 16px; }
+.headerIconWrap { width: 64px; height: 64px; margin: 0 auto 12px; border-radius: 9999px; background: linear-gradient(135deg, #2b6cb0, #06b6d4); display: flex; align-items: center; justify-content: center; }
+.headerIcon { width: 32px; height: 32px; color: #fff; }
+.headerTitle { font-size: 22px; font-weight: 700; color: var(--text-primary); margin-bottom: 6px; }
+.headerSubtitle { color: var(--text-secondary); }
+
+.errorBox { background: rgba(239,68,68,0.10); border: 1px solid rgba(239,68,68,0.20); border-radius: 8px; padding: 12px; margin-bottom: 12px; }
+.errorText { color: #ef4444; font-size: 13px; }
+
+.form { display: flex; flex-direction: column; gap: 16px; }
+.label { display: block; font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 8px; }
+.inputWrap { position: relative; }
+.inputIconLeft { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 20px; height: 20px; color: var(--text-muted); }
+.input { width: 100%; padding: 12px 14px 12px 40px; background: var(--bg-tertiary); border: 1px solid var(--surface); border-radius: 8px; color: var(--text-primary); }
+.input:focus { outline: none; border-color: var(--info); box-shadow: 0 0 0 3px rgba(6,182,212,0.2); }
+
+.inputWithToggle { width: 100%; padding: 12px 44px 12px 40px; background: var(--bg-tertiary); border: 1px solid var(--surface); border-radius: 8px; color: var(--text-primary); }
+.inputWithToggle:focus { outline: none; border-color: var(--info); box-shadow: 0 0 0 3px rgba(6,182,212,0.2); }
+.inputToggle { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); background: transparent; border: none; cursor: pointer; }
+.inputToggle:hover { color: var(--text-secondary); }
+.toggleIcon { width: 20px; height: 20px; }
+
+.submitBtn { width: 100%; padding: 12px; background: var(--primary, #2563eb); color: #fff; border: none; border-radius: 8px; font-weight: 600; }
+.submitBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+.submitIcon { width: 20px; height: 20px; margin-right: 6px; }
+.spinnerRow { display: flex; align-items: center; justify-content: center; gap: 8px; }
+.spinner { width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 9999px; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg);} }
+
+.footer { margin-top: 16px; text-align: center; }
+.footerText { color: var(--text-muted); }
+.footerLink { color: var(--info); font-weight: 600; background: transparent; border: none; cursor: pointer; }
+.footerLink:hover { color: var(--accent-gold); }

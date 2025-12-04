@@ -1,0 +1,65 @@
+.token {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  pointer-events: auto;
+}
+
+.token.selected .token-inner {
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.5), 0 4px 12px rgba(0,0,0,0.3);
+  transform: scale(1.15);
+}
+
+.token-inner {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 9999px;
+  border-width: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 0.75rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.token-inner:hover {
+  transform: scale(1.1);
+}
+
+.tokens-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* Posiciones del tablero */
+.board-position {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  z-index: 5;
+  pointer-events: auto;
+  background-color: rgba(59, 130, 246, 0.3);
+  border: 2px solid rgba(59, 130, 246, 0.8);
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.board-position:hover {
+  background-color: rgba(59, 130, 246, 0.6);
+  transform: translate(-50%, -50%) scale(1.2);
+  border-color: rgba(59, 130, 246, 1);
+}
+
+.position-number {
+  color: white;
+  font-size: 0.65rem;
+  font-weight: bold;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}

@@ -1,0 +1,27 @@
+.container { min-height: 100vh; display: flex; }
+
+.leftPanel { display: none; position: relative; overflow: hidden; background: linear-gradient(135deg, #2b6cb0, #06b6d4, #22c55e); }
+@media (min-width: 1024px) { .leftPanel { display: flex; width: 50%; } }
+.leftOverlay { position: absolute; inset: 0; background: rgba(0,0,0,0.2); }
+.leftContent { position: relative; z-index: 10; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 48px; color: #fff; width: 100%; }
+.leftInner { text-align: center; max-width: 640px; }
+.leftIconWrap { width: 96px; height: 96px; margin: 0 auto 24px; background: rgba(255,255,255,0.10); backdrop-filter: blur(6px); border-radius: 9999px; display: flex; align-items: center; justify-content: center; }
+.leftIcon { width: 48px; height: 48px; }
+.leftTitle { font-size: 36px; font-weight: 800; margin-bottom: 16px; }
+.leftSubtitle { font-size: 20px; margin-bottom: 24px; color: rgba(255,255,255,0.9); }
+.featuresList { display: flex; flex-direction: column; gap: 12px; text-align: left; }
+.featureItem { display: flex; align-items: center; gap: 12px; }
+.featureIcon { width: 20px; height: 20px; color: #ffd65a; }
+
+.blobYellow { position: absolute; top: 40px; left: 40px; width: 80px; height: 80px; background: rgba(234,179,8,0.2); border-radius: 9999px; filter: blur(24px); }
+.blobRed { position: absolute; bottom: 80px; right: 80px; width: 128px; height: 128px; background: rgba(239,68,68,0.2); border-radius: 9999px; filter: blur(24px); }
+.blobGreen { position: absolute; top: 50%; right: 40px; width: 64px; height: 64px; background: rgba(34,197,94,0.2); border-radius: 9999px; filter: blur(24px); }
+
+.rightPanel { width: 100%; display: flex; align-items: center; justify-content: center; padding: 32px; background: var(--bg-primary); }
+@media (min-width: 1024px) { .rightPanel { width: 50%; } }
+.rightInner { width: 100%; max-width: 420px; }
+.mobileLogo { display: block; text-align: center; margin-bottom: 24px; }
+@media (min-width: 1024px) { .mobileLogo { display: none; } }
+.mobileIconWrap { width: 64px; height: 64px; margin: 0 auto 12px; border-radius: 9999px; background: linear-gradient(135deg, #2b6cb0, #06b6d4); display: flex; align-items: center; justify-content: center; }
+.mobileIcon { width: 32px; height: 32px; color: #fff; }
+.mobileTitle { font-size: 22px; font-weight: 700; color: var(--text-primary); }

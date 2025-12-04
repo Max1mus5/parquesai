@@ -1,0 +1,563 @@
+.container {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.header {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  padding: 0;
+}
+
+.toggleButton {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.toggleButton:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.headerIcon {
+  width: 18px;
+  height: 18px;
+}
+
+.headerTitle {
+  flex: 1;
+  text-align: left;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.chevron {
+  width: 18px;
+  height: 18px;
+}
+
+.content {
+  padding: 0;
+  border-top: 1px solid #e5e7eb;
+}
+
+.tabsContainer {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f9fafb;
+  overflow-x: auto;
+}
+
+.tab {
+  flex: 1;
+  min-width: 100px;
+  padding: 10px 12px;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: #6b7280;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.tab:hover {
+  color: #1f2937;
+  background: #f3f4f6;
+}
+
+.tabActive {
+  color: #3b82f6;
+  border-bottom-color: #3b82f6;
+}
+
+.tabLoader {
+  margin-left: 4px;
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+.tabContent {
+  padding: 16px;
+  min-height: 200px;
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.loadingState {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px;
+  text-align: center;
+}
+
+.emptyText {
+  color: #6b7280;
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+.loadButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: #3b82f6;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.loadButton:hover:not(:disabled) {
+  background-color: #2563eb;
+}
+
+.loadButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.refreshIcon {
+  width: 16px;
+  height: 16px;
+}
+
+.errorBox {
+  padding: 12px;
+  background: #fee2e2;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+  margin-bottom: 16px;
+}
+
+.errorText {
+  color: #991b1b;
+  font-size: 13px;
+  margin: 0;
+}
+
+.recommendationsList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.recommendationCard {
+  padding: 12px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.recommendationCard:hover {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+}
+
+.cardHeader {
+  margin-bottom: 8px;
+}
+
+.titleSection {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+  flex: 1;
+}
+
+.badges {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.priorityBadge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.typeBadge {
+  display: inline-block;
+  padding: 2px 8px;
+  background: #dbeafe;
+  color: #1e40af;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.confidence {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.confidenceBar {
+  width: 60px;
+  height: 6px;
+  background: #e5e7eb;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.confidenceFill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.3s;
+}
+
+.confidenceText {
+  font-size: 11px;
+  font-weight: 600;
+  color: #6b7280;
+  min-width: 28px;
+}
+
+.description {
+  font-size: 13px;
+  color: #6b7280;
+  margin: 0 0 8px 0;
+  line-height: 1.4;
+}
+
+.dataSection {
+  margin-top: 8px;
+}
+
+.details {
+  cursor: pointer;
+}
+
+.summary {
+  font-size: 12px;
+  font-weight: 600;
+  color: #3b82f6;
+  padding: 6px 0;
+  user-select: none;
+}
+
+.summary:hover {
+  color: #2563eb;
+}
+
+.dataContent {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  padding: 8px;
+  margin-top: 8px;
+  font-size: 11px;
+  color: #374151;
+  overflow-x: auto;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.noRecommendations {
+  text-align: center;
+  color: #9ca3af;
+  font-size: 13px;
+  padding: 20px;
+  margin: 0;
+}
+
+.jsonPreview {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  padding: 12px;
+  font-size: 11px;
+  color: #374151;
+  overflow-x: auto;
+  max-height: 400px;
+}
+
+/* Improvement Suggestions */
+.improvementContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.improvementSection {
+  padding: 12px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+}
+
+.sectionTitle {
+  font-size: 12px;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 8px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.improvementLevel {
+  font-size: 16px;
+  font-weight: 700;
+  color: #3b82f6;
+  margin: 0;
+}
+
+.improvementList {
+  margin: 0;
+  padding-left: 20px;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.improvementList li {
+  margin-bottom: 8px;
+}
+
+.improvementAreas {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.improvementArea {
+  padding: 8px;
+  background: #ffffff;
+  border-left: 3px solid #3b82f6;
+  border-radius: 2px;
+}
+
+.areaName {
+  font-size: 12px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 4px 0;
+}
+
+.areaDescription {
+  font-size: 12px;
+  color: #6b7280;
+  margin: 0;
+}
+
+/* Challenges */
+.challengesList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.challengeCard {
+  padding: 12px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+}
+
+.challengeHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  gap: 8px;
+}
+
+.challengeTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+}
+
+.difficultyBadge {
+  display: inline-block;
+  padding: 2px 8px;
+  background: #dbeafe;
+  color: #1e40af;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.challengeDescription {
+  font-size: 12px;
+  color: #6b7280;
+  margin: 0 0 8px 0;
+}
+
+.challengeProgress {
+  margin-bottom: 8px;
+}
+
+.progressBar {
+  width: 100%;
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, #3b82f6, #06b6d4);
+  transition: width 0.3s;
+}
+
+.progressText {
+  font-size: 11px;
+  color: #6b7280;
+}
+
+.challengeReward {
+  font-size: 12px;
+  color: #16a34a;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* Player Pattern */
+.patternContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.patternSection {
+  padding: 12px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+}
+
+.patternValue {
+  font-size: 16px;
+  font-weight: 700;
+  color: #3b82f6;
+  margin: 0;
+}
+
+.colorsList {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.colorTag {
+  display: inline-block;
+  padding: 4px 10px;
+  background: #dbeafe;
+  color: #1e40af;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.patternStats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.statBox {
+  padding: 12px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  text-align: center;
+}
+
+.statLabel {
+  display: block;
+  font-size: 11px;
+  color: #6b7280;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.statValue {
+  display: block;
+  font-size: 18px;
+  font-weight: 700;
+  color: #3b82f6;
+}
+
+.strategiesList {
+  margin: 0;
+  padding-left: 20px;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.strategiesList li {
+  margin-bottom: 6px;
+}
+
+/* Stats */
+.statsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.statsList {
+  margin: 0;
+  padding-left: 20px;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.statsList li {
+  margin-bottom: 6px;
+}
+
+.statsList strong {
+  color: #1f2937;
+  font-weight: 700;
+}

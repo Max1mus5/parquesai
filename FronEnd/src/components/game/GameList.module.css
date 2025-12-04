@@ -1,0 +1,160 @@
+.container { min-height: 100vh; background: var(--bg-primary); }
+
+.header { background: var(--bg-secondary); border-bottom: 1px solid var(--surface); }
+.headerInner { max-width: 1120px; margin: 0 auto; padding: 0 16px; display: flex; align-items: center; justify-content: space-between; height: 64px; }
+.headerLeft { display: flex; align-items: center; gap: 12px; }
+.backButton { padding: 8px; border-radius: 8px; background: transparent; border: 1px solid transparent; }
+.backButton:hover { background: var(--bg-primary); }
+.backIcon { width: 20px; height: 20px; color: var(--text-primary); }
+.headerTitle { font-size: 18px; font-weight: 700; color: var(--text-primary); }
+.createButton { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; background: #16a34a; color: #fff; border: none; border-radius: 8px; font-weight: 600; }
+.createIcon { width: 16px; height: 16px; }
+
+.main { max-width: 1120px; margin: 0 auto; padding: 32px 16px; }
+.errorBox { margin-bottom: 24px; padding: 16px; background: rgba(239,68,68,0.10); border: 1px solid rgba(239,68,68,0.40); border-radius: 8px; }
+.errorText { color: #ef4444; font-size: 13px; }
+
+.emptyState { text-align: center; padding: 48px 0; }
+.emptyEmoji { font-size: 56px; margin-bottom: 12px; }
+.emptyTitle { font-size: 22px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px; }
+.emptySubtitle { color: var(--text-secondary); margin-bottom: 16px; }
+.primaryButtonLg { padding: 12px 24px; background: #16a34a; color: #fff; border: none; border-radius: 8px; font-weight: 600; }
+
+.cardGrid { display: grid; grid-template-columns: 1fr; gap: 24px; }
+@media (min-width: 768px) { .cardGrid { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 1024px) { .cardGrid { grid-template-columns: 1fr 1fr 1fr; } }
+
+.card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; padding: 16px; transition: box-shadow 0.2s ease-in-out; overflow: hidden; }
+.card:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.12); }
+
+.cardHeader { margin-bottom: 16px; }
+.cardTitle { font-size: 16px; font-weight: 600; color: var(--text-primary); margin-bottom: 6px; }
+.badgeRow { display: flex; align-items: center; gap: 8px; }
+.badge { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 9999px; font-size: 12px; font-weight: 600; }
+.badgeWaiting { background: rgba(234,179,8,0.14); color: #eab308; }
+.badgeProgress { background: rgba(6,182,212,0.14); color: #06b6d4; }
+.badgeSuccess { background: rgba(22,163,74,0.14); color: #16a34a; }
+
+.infoList { display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px; }
+.infoItem { display: flex; align-items: center; gap: 12px; }
+.infoIcon { width: 16px; height: 16px; color: var(--text-secondary); }
+.lockIcon { width: 16px; height: 16px; color: #eab308; }
+.globeIcon { width: 16px; height: 16px; color: #16a34a; }
+.infoText { font-size: 13px; color: var(--text-secondary); }
+
+.progressWrap { margin-bottom: 16px; }
+.progressBg { width: 100%; height: 8px; border-radius: 9999px; background: var(--bg-primary); }
+.progressBar { height: 8px; border-radius: 9999px; background: linear-gradient(90deg, #2b6cb0, #06b6d4); transition: width 0.2s ease-in-out; }
+
+.primaryButton, .secondaryButton, .secondaryButtonDisabled { width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 12px; border-radius: 8px; font-weight: 600; }
+.buttonIcon { width: 16px; height: 16px; }
+.primaryButton { background: var(--primary, #2563eb); color: #fff; border: none; }
+.secondaryButton { background: transparent; color: var(--text-secondary); border: 1px solid var(--border); }
+.secondaryButtonDisabled { background: transparent; color: var(--text-secondary); border: 1px solid var(--border); opacity: 0.5; cursor: not-allowed; }
+.colorModal {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  padding: 1rem;
+}
+
+.modalContent {
+  background-color: #ffffff;
+  border-radius: 0.5rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  max-width: 28rem;
+  width: 100%;
+  padding: 1.5rem;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.modalTitle {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #1f2937;
+}
+
+.closeButton {
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  transition: background-color 0.15s;
+}
+
+.closeButton:hover {
+  background-color: var(--bg-primary);
+}
+
+.colorGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.colorButton {
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  border-width: 4px;
+  transition: all 0.15s;
+  transform: scale(1);
+  cursor: pointer;
+}
+
+.colorButton:hover {
+  transform: scale(1.05);
+}
+
+.colorButton.selected {
+  box-shadow: 0 0 0 4px;
+}
+
+.colorCircle {
+  text-align: center;
+}
+
+.colorDot {
+  font-size: 1.875rem;
+  margin-bottom: 0.5rem;
+}
+
+.colorName {
+  font-weight: bold;
+  font-size: 0.875rem;
+}
+
+.modalActions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.cancelButton {
+  flex: 1;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  transition: background-color 0.15s;
+}
+
+.cancelButton:hover {
+  background-color: var(--bg-primary);
+}
+
+.confirmButton {
+  flex: 1;
+}
+
+.confirmButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
